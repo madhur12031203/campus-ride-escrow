@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type RoleLoginCardProps = {
@@ -15,13 +16,23 @@ export default function RoleLoginCard({
   subtitle,
   accentClass,
 }: RoleLoginCardProps) {
+  const [error, setError] = useState<string | null>(null);
+
   async function handleSignIn() {
-    const supabase = createClient();
-    const redirectTo = `${window.location.origin}/auth/callback?role=${role}`;
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo },
-    });
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const redirectTo = `${window.location.origin}/auth/callback?role=${role}`;
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+
+      if (oauthError) throw oauthError;
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Google sign-in failed. Please try again.");
+    }
   }
 
   return (
@@ -36,7 +47,11 @@ export default function RoleLoginCard({
       >
         Continue with Google
       </button>
+      {error && (
+        <div className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-sm text-rose-200">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
-

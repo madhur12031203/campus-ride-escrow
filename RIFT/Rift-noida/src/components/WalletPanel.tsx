@@ -15,7 +15,7 @@ function shortenAddress(value: string): string {
 
 function WalletIcon() {
   return (
-    <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="h-5 w-5 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -55,7 +55,7 @@ export default function WalletPanel({
 
   if (!isConfigValid) {
     return (
-      <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
+      <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
         <p className="text-sm text-amber-200">
           Wallet configuration incomplete. Set NEXT_PUBLIC_RIDE_ESCROW_APP_ID and
           NEXT_PUBLIC_RIDE_ESCROW_APP_ADDRESS.
@@ -65,18 +65,20 @@ export default function WalletPanel({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200/10 bg-white/5 p-4 backdrop-blur-sm">
-      <div className="flex items-center justify-between">
+    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <WalletIcon />
+          <div className="grid h-10 w-10 place-items-center rounded-lg border border-teal-200 bg-teal-50">
+            <WalletIcon />
+          </div>
           <div>
-            <p className="text-xs font-medium text-slate-400">Algorand Wallet</p>
+            <p className="text-xs font-semibold uppercase text-slate-500">Algorand wallet</p>
             {address ? (
-              <p className="mt-0.5 text-sm font-medium text-slate-100" title={address}>
+              <p className="mt-0.5 text-sm font-semibold text-slate-950" title={address}>
                 {shortenAddress(address)}
               </p>
             ) : (
-              <p className="mt-0.5 text-sm text-slate-300">Connect Wallet</p>
+              <p className="mt-0.5 text-sm text-slate-600">Required for ride escrow</p>
             )}
           </div>
         </div>
@@ -86,7 +88,7 @@ export default function WalletPanel({
             <button
               type="button"
               onClick={() => void disconnectWallet()}
-              className="rounded-xl border border-slate-600 bg-slate-800/50 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:bg-slate-700"
+              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               Disconnect
             </button>
@@ -96,7 +98,7 @@ export default function WalletPanel({
             type="button"
             onClick={() => void connectWallet()}
             disabled={isConnecting}
-            className="min-h-[44px] rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
+            className="min-h-[44px] rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isConnecting ? "Connecting..." : "Connect Wallet"}
           </button>

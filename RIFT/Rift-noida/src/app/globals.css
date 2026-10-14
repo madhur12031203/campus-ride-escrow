@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #0f172a;
-  --foreground: #f1f5f9;
-  --card: #1e293b;
-  --card-border: #334155;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-border: #dbe3ef;
   --accent: #10b981;
   --accent-hover: #34d399;
   --accent-glow: rgba(16, 185, 129, 0.25);
-  --muted: #94a3b8;
+  --muted: #64748b;
 }
 
 body {
@@ -20,13 +20,15 @@ body {
   min-height: 100vh;
 }
 
-/* Subtle gradient mesh for depth */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(59, 130, 246, 0.08), transparent);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(226, 232, 240, 0.35));
   pointer-events: none;
   z-index: 0;
+}
+
+::selection {
+  background: rgba(20, 184, 166, 0.35);
 }

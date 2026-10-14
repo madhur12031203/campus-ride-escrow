@@ -3,47 +3,68 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import VideoBackground from "@/components/VideoBackground";
 import { createClient } from "@/lib/supabase/client";
+
+const AUTH_CHECK_TIMEOUT_MS = 6000;
+
+function withTimeout<T>(promise: Promise<T>, message: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => reject(new Error(message)), AUTH_CHECK_TIMEOUT_MS);
+
+    promise
+      .then(resolve)
+      .catch(reject)
+      .finally(() => window.clearTimeout(timeoutId));
+  });
+}
 
 export default function LoginPage() {
   const router = useRouter();
-  const [isChecking, setIsChecking] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    void supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        router.replace("/");
-      } else {
-        setIsChecking(false);
-      }
-    });
+    try {
+      const supabase = createClient();
+      void withTimeout(
+        supabase.auth.getUser(),
+        "Login check timed out. Check your internet connection and Supabase settings."
+      )
+        .then(({ data }) => {
+          if (data.user) {
+            router.replace("/");
+          }
+        })
+        .catch((err: unknown) => {
+          setError(err instanceof Error ? err.message : "Unable to check login status.");
+        });
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Unable to check login status.");
+    }
   }, [router]);
 
-  if (isChecking) {
-    return (
-      <main className="relative flex min-h-screen flex-col items-center justify-center bg-slate-950 px-6">
-        <div className="text-sm text-slate-400">Loading...</div>
-      </main>
-    );
-  }
-
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center bg-slate-950 px-6">
-      <div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(16,185,129,0.12),transparent)]"
-        aria-hidden
-      />
-      <div className="relative z-10 w-full max-w-3xl rounded-2xl border border-slate-700/50 bg-slate-900/70 p-8 shadow-2xl backdrop-blur-sm">
-        <h1 className="text-center text-3xl font-bold text-slate-100">Welcome to Campus Ride</h1>
+    <main className="relative isolate flex min-h-screen flex-col items-center justify-center px-6">
+      <VideoBackground />
+      <div className="relative z-10 w-full max-w-3xl rounded-lg border border-white/10 bg-slate-950/80 p-6 shadow-2xl shadow-black/30 backdrop-blur sm:p-8">
+        <div className="mx-auto mb-5 grid h-12 w-12 place-items-center rounded-lg border border-teal-400/25 bg-teal-400/10 text-sm font-black text-teal-200">
+          CR
+        </div>
+        <h1 className="text-center text-3xl font-semibold text-slate-100">Campus Ride</h1>
         <p className="mt-2 text-center text-sm text-slate-400">
-          Choose how you want to use the app today.
+          Choose your workflow to continue.
         </p>
+
+        {error && (
+          <div className="mt-6 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            {error}
+          </div>
+        )}
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           <Link
             href="/login/driver"
-            className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-5 transition hover:bg-cyan-500/20"
+            className="min-h-[138px] rounded-lg border border-cyan-500/25 bg-cyan-500/10 p-5 transition hover:border-cyan-300/50 hover:bg-cyan-500/15"
           >
             <p className="text-lg font-semibold text-cyan-100">Login as Driver</p>
             <p className="mt-1 text-sm text-cyan-200/80">
@@ -52,7 +73,7 @@ export default function LoginPage() {
           </Link>
           <Link
             href="/login/passenger"
-            className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-5 transition hover:bg-emerald-500/20"
+            className="min-h-[138px] rounded-lg border border-teal-500/25 bg-teal-500/10 p-5 transition hover:border-teal-300/50 hover:bg-teal-500/15"
           >
             <p className="text-lg font-semibold text-emerald-100">Login as Passenger</p>
             <p className="mt-1 text-sm text-emerald-200/80">

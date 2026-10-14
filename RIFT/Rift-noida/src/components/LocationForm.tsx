@@ -13,7 +13,7 @@ interface LocationFormProps {
 function MapPinIcon() {
   return (
     <svg
-      className="h-5 w-5 shrink-0 text-gray-400"
+      className="h-5 w-5 shrink-0 text-teal-600"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -50,7 +50,7 @@ function FlagIcon() {
 function ArrowRightIcon() {
   return (
     <svg
-      className="h-5 w-5 shrink-0 text-red-500"
+      className="h-5 w-5 shrink-0 text-slate-400"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -153,11 +153,11 @@ export default function LocationForm({ onSubmit, isLoading = false }: LocationFo
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="relative w-full max-w-3xl">
-      <div className="rounded-2xl border border-slate-700/70 bg-slate-900/70 p-3 shadow-xl backdrop-blur-sm">
-        <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-2">
+    <form ref={formRef} onSubmit={handleSubmit} className="relative w-full">
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm">
+        <div className="flex flex-col items-center gap-3">
           <div className="relative w-full flex-1">
-            <div className="flex items-center gap-2 rounded-xl border border-slate-600/70 bg-slate-800/80 px-3 py-2.5 shadow-sm transition focus-within:border-emerald-400/60 focus-within:ring-2 focus-within:ring-emerald-400/20">
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5 shadow-sm transition focus-within:border-teal-400">
               <MapPinIcon />
               <input
                 id="origin"
@@ -167,20 +167,20 @@ export default function LocationForm({ onSubmit, isLoading = false }: LocationFo
                 onFocus={() => setActive("origin")}
                 onChange={(e) => setOrigin(e.target.value)}
                 placeholder="Pickup location"
-                className="min-w-0 flex-1 bg-transparent text-sm text-slate-100 placeholder-slate-400 outline-none"
+                className="min-w-0 flex-1 bg-transparent text-sm text-slate-950 placeholder-slate-400 outline-none"
                 disabled={isLoading}
                 autoComplete="off"
               />
             </div>
 
             {active === "origin" && originSug.length > 0 && (
-              <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-slate-600/80 bg-slate-900 shadow-2xl">
+              <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl">
                 {originSug.slice(0, 6).map((p) => (
                   <button
                     type="button"
                     key={p.placeId}
                     onClick={() => pickSuggestion(p.text)}
-                    className="block w-full truncate border-b border-slate-800 px-3 py-2.5 text-left text-sm text-slate-100 transition last:border-b-0 hover:bg-slate-800"
+                    className="block w-full truncate border-b border-slate-100 px-3 py-2.5 text-left text-sm text-slate-700 transition last:border-b-0 hover:bg-slate-50"
                   >
                     {p.text}
                   </button>
@@ -189,12 +189,12 @@ export default function LocationForm({ onSubmit, isLoading = false }: LocationFo
             )}
           </div>
 
-          <div className="hidden shrink-0 px-1 sm:block" aria-hidden>
+          <div className="shrink-0 px-1" aria-hidden>
             <ArrowRightIcon />
           </div>
 
           <div className="relative w-full flex-1">
-            <div className="flex items-center gap-2 rounded-xl border border-slate-600/70 bg-slate-800/80 px-3 py-2.5 shadow-sm transition focus-within:border-emerald-400/60 focus-within:ring-2 focus-within:ring-emerald-400/20">
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5 shadow-sm transition focus-within:border-teal-400">
               <FlagIcon />
               <input
                 id="destination"
@@ -204,20 +204,20 @@ export default function LocationForm({ onSubmit, isLoading = false }: LocationFo
                 onFocus={() => setActive("destination")}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder="Drop location"
-                className="min-w-0 flex-1 bg-transparent text-sm text-slate-100 placeholder-slate-400 outline-none"
+                className="min-w-0 flex-1 bg-transparent text-sm text-slate-950 placeholder-slate-400 outline-none"
                 disabled={isLoading}
                 autoComplete="off"
               />
             </div>
 
             {active === "destination" && destSug.length > 0 && (
-              <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-slate-600/80 bg-slate-900 shadow-2xl">
+              <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl">
                 {destSug.slice(0, 6).map((p) => (
                   <button
                     type="button"
                     key={p.placeId}
                     onClick={() => pickSuggestion(p.text)}
-                    className="block w-full truncate border-b border-slate-800 px-3 py-2.5 text-left text-sm text-slate-100 transition last:border-b-0 hover:bg-slate-800"
+                    className="block w-full truncate border-b border-slate-100 px-3 py-2.5 text-left text-sm text-slate-700 transition last:border-b-0 hover:bg-slate-50"
                   >
                     {p.text}
                   </button>
@@ -229,16 +229,16 @@ export default function LocationForm({ onSubmit, isLoading = false }: LocationFo
       </div>
 
       {active && suggestions.length === 0 && (active === "origin" ? origin.trim().length >= 3 : destination.trim().length >= 3) && (
-        <p className="mt-2 text-center text-xs text-slate-400">No suggestions found.</p>
+        <p className="mt-2 text-center text-xs text-slate-500">No suggestions found.</p>
       )}
 
-      {error && <p className="mt-3 text-center text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-3 text-center text-sm text-red-600">{error}</p>}
 
       <div className="mt-4 flex justify-center">
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-xl bg-emerald-500 px-7 py-2.5 font-semibold text-slate-900 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 disabled:opacity-50 sm:w-auto"
+          className="w-full rounded-lg bg-teal-600 px-7 py-2.5 font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:opacity-50"
         >
           {isLoading ? "Comparing..." : "Compare Prices"}
         </button>

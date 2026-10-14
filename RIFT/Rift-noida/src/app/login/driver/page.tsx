@@ -1,12 +1,10 @@
 import AuthForm from "@/components/auth/AuthForm";
+import VideoBackground from "@/components/VideoBackground";
 
 export default function DriverLoginPage() {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center bg-slate-950 px-6">
-      <div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_20%_-10%,rgba(34,211,238,0.14),transparent)]"
-        aria-hidden
-      />
+    <main className="relative isolate flex min-h-screen flex-col items-center justify-center px-6">
+      <VideoBackground />
       <div className="relative z-10 w-full max-w-md">
         <AuthForm
           role="driver"

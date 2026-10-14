@@ -22,16 +22,16 @@ export default function ResultCard({ result, isBestDeal, isSelected, onSelect }:
   const iconPath = result.icon ? `/icons/${result.icon}` : null;
   const isHighlight = isBestDeal || isSelected;
   const cardBg = isHighlight
-    ? "bg-slate-800/80 border-amber-500/50 shadow-lg shadow-amber-500/10"
-    : "bg-slate-800/60 border-slate-600/50";
+    ? "bg-amber-50 border-amber-200"
+    : "bg-white border-slate-200";
 
   return (
     <div
-      className={`flex flex-col rounded-xl border-2 p-5 shadow-lg backdrop-blur-sm transition ${cardBg}`}
+      className={`flex flex-col rounded-lg border p-4 shadow-sm transition ${cardBg}`}
     >
       <div className="mb-3 flex items-center gap-2">
         {iconPath ? (
-          <div className="relative h-12 w-12 overflow-hidden rounded-full bg-slate-700/80 ring-2 ring-slate-600/50">
+          <div className="relative h-12 w-12 overflow-hidden rounded-full bg-slate-50 ring-1 ring-slate-200">
             <Image
               src={iconPath}
               alt={result.provider}
@@ -46,19 +46,19 @@ export default function ResultCard({ result, isBestDeal, isSelected, onSelect }:
               }}
             />
             <span
-              className="absolute inset-0 hidden items-center justify-center text-lg font-bold text-slate-400"
+              className="absolute inset-0 hidden items-center justify-center text-lg font-bold text-slate-500"
               style={{ display: "none" }}
             >
               {result.provider[0]}
             </span>
           </div>
         ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-700/80 text-lg font-bold text-slate-400 ring-2 ring-slate-600/50">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-50 text-lg font-bold text-slate-500 ring-1 ring-slate-200">
             {result.provider[0]}
           </div>
         )}
         <div>
-          <p className="flex items-center gap-1.5 font-bold text-slate-100">
+          <p className="flex items-center gap-1.5 font-bold text-slate-950">
             {result.provider}
             {isBestDeal && (
               <span className="text-amber-400">
@@ -66,10 +66,10 @@ export default function ResultCard({ result, isBestDeal, isSelected, onSelect }:
               </span>
             )}
           </p>
-          <p className="text-sm text-slate-400">Est. Time: {result.duration.replace("~", "")}</p>
+          <p className="text-sm text-slate-600">Est. Time: {result.duration.replace("~", "")}</p>
         </div>
       </div>
-      <p className="mb-4 text-2xl font-bold text-slate-100">Rs {result.price}</p>
+      <p className="mb-4 text-2xl font-bold text-slate-950">Rs {result.price}</p>
       <a
         href={result.bookingUrl || "#"}
         target="_blank"
@@ -80,7 +80,7 @@ export default function ResultCard({ result, isBestDeal, isSelected, onSelect }:
             ? "bg-amber-400 text-slate-900 shadow-md shadow-amber-500/20"
             : isHighlight
               ? "bg-amber-500/90 text-slate-900 hover:bg-amber-400 shadow-md shadow-amber-500/20"
-              : "bg-slate-700 text-slate-100 hover:bg-slate-600 ring-1 ring-slate-600"
+              : "bg-slate-900 text-white hover:bg-slate-800"
         }`}
       >
         Book Now
