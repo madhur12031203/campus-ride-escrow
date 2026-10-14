@@ -3,262 +3,1568 @@
 
 // smart_contracts.ride_escrow.contract.RideEscrow.__algopy_entrypoint_with_init() -> uint64:
 main:
-    intcblock 0 1 2
-    bytecblock "status" "amount" "driver" "rider"
+    intcblock 1 0 2 32 47700
+    bytecblock 0x004a "admin" "timeout_rounds" "dispute_timeout_rounds" 0x507cfc19
     txn ApplicationID
     bnz main_after_if_else@2
-    // smart_contracts/ride_escrow/contract.py:17
-    // self.driver = Account()
-    bytec_2 // "driver"
+    // smart_contracts/ride_escrow/contract.py:39
+    // self.admin = Account()
+    bytec_1 // "admin"
     global ZeroAddress
     app_global_put
-    // smart_contracts/ride_escrow/contract.py:18
-    // self.rider = Account()
-    bytec_3 // "rider"
-    global ZeroAddress
+    // smart_contracts/ride_escrow/contract.py:40
+    // self.timeout_rounds = UInt64(0)
+    bytec_2 // "timeout_rounds"
+    intc_1 // 0
     app_global_put
-    // smart_contracts/ride_escrow/contract.py:19
-    // self.amount = UInt64(0)
-    bytec_1 // "amount"
-    intc_0 // 0
-    app_global_put
-    // smart_contracts/ride_escrow/contract.py:20
-    // self.status = UInt64(CANCELLED)
-    bytec_0 // "status"
-    intc_2 // 2
+    // smart_contracts/ride_escrow/contract.py:41
+    // self.dispute_timeout_rounds = UInt64(0)
+    bytec_3 // "dispute_timeout_rounds"
+    intc_1 // 0
     app_global_put
 
 main_after_if_else@2:
-    // smart_contracts/ride_escrow/contract.py:9
+    // smart_contracts/ride_escrow/contract.py:33
     // class RideEscrow(ARC4Contract):
     txn NumAppArgs
-    bz main_bare_routing@8
-    pushbytess 0x5eddb3ea 0x56c111b4 0xa6f0bf8c // method "book_trip(address,pay)void", method "complete_trip()void", method "cancel_trip()void"
+    bz main_after_if_else@17
+    pushbytess 0x9479ff63 0x797ba4b6 0x305fe916 0x3735a10f 0xf24e94cb 0x8130c365 0xbed04725 0x49bf951e 0xafd7503e 0xa2931262 0x648c9eca 0x603ace8d // method "create(uint64,uint64)void", method "set_admin(account)void", method "get_ride(address,string)(address,address,uint64,uint8,uint64)", method "book_trip(string,address,pay)void", method "cancel_trip(address,string)void", method "start_ride(address,string)void", method "mark_dropoff(address,string)void", method "confirm_complete(address,string)void", method "claim_after_timeout(address,string)void", method "raise_dispute(address,string)void", method "resolve_dispute(address,string,bool)void", method "reclaim_after_dispute_timeout(address,string)void"
     txna ApplicationArgs 0
-    match main_book_trip_route@5 main_complete_trip_route@6 main_cancel_trip_route@7
+    match main_create_route@5 main_set_admin_route@6 main_get_ride_route@7 main_book_trip_route@8 main_cancel_trip_route@9 main_start_ride_route@10 main_mark_dropoff_route@11 main_confirm_complete_route@12 main_claim_after_timeout_route@13 main_raise_dispute_route@14 main_resolve_dispute_route@15 main_reclaim_after_dispute_timeout_route@16
 
-main_after_if_else@10:
-    // smart_contracts/ride_escrow/contract.py:9
+main_after_if_else@17:
+    // smart_contracts/ride_escrow/contract.py:33
     // class RideEscrow(ARC4Contract):
-    intc_0 // 0
+    intc_1 // 0
     return
 
-main_cancel_trip_route@7:
-    // smart_contracts/ride_escrow/contract.py:45
+main_reclaim_after_dispute_timeout_route@16:
+    // smart_contracts/ride_escrow/contract.py:262
     // @arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    callsub cancel_trip
-    intc_1 // 1
-    return
-
-main_complete_trip_route@6:
-    // smart_contracts/ride_escrow/contract.py:35
-    // @arc4.abimethod
-    txn OnCompletion
-    !
-    assert // OnCompletion is not NoOp
-    txn ApplicationID
-    assert // can only call when not creating
-    callsub complete_trip
-    intc_1 // 1
-    return
-
-main_book_trip_route@5:
-    // smart_contracts/ride_escrow/contract.py:22
-    // @arc4.abimethod
-    txn OnCompletion
-    !
-    assert // OnCompletion is not NoOp
-    txn ApplicationID
-    assert // can only call when not creating
-    // smart_contracts/ride_escrow/contract.py:9
+    // smart_contracts/ride_escrow/contract.py:33
     // class RideEscrow(ARC4Contract):
     txna ApplicationArgs 1
     dup
     len
-    pushint 32 // 32
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/ride_escrow/contract.py:262
+    // @arc4.abimethod
+    callsub reclaim_after_dispute_timeout
+    intc_0 // 1
+    return
+
+main_resolve_dispute_route@15:
+    // smart_contracts/ride_escrow/contract.py:233
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    txna ApplicationArgs 3
+    dup
+    len
+    intc_0 // 1
+    ==
+    assert // invalid number of bytes for arc4.bool
+    intc_1 // 0
+    getbit
+    // smart_contracts/ride_escrow/contract.py:233
+    // @arc4.abimethod
+    callsub resolve_dispute
+    intc_0 // 1
+    return
+
+main_raise_dispute_route@14:
+    // smart_contracts/ride_escrow/contract.py:205
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/ride_escrow/contract.py:205
+    // @arc4.abimethod
+    callsub raise_dispute
+    intc_0 // 1
+    return
+
+main_claim_after_timeout_route@13:
+    // smart_contracts/ride_escrow/contract.py:182
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/ride_escrow/contract.py:182
+    // @arc4.abimethod
+    callsub claim_after_timeout
+    intc_0 // 1
+    return
+
+main_confirm_complete_route@12:
+    // smart_contracts/ride_escrow/contract.py:159
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/ride_escrow/contract.py:159
+    // @arc4.abimethod
+    callsub confirm_complete
+    intc_0 // 1
+    return
+
+main_mark_dropoff_route@11:
+    // smart_contracts/ride_escrow/contract.py:140
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/ride_escrow/contract.py:140
+    // @arc4.abimethod
+    callsub mark_dropoff
+    intc_0 // 1
+    return
+
+main_start_ride_route@10:
+    // smart_contracts/ride_escrow/contract.py:121
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/ride_escrow/contract.py:121
+    // @arc4.abimethod
+    callsub start_ride
+    intc_0 // 1
+    return
+
+main_cancel_trip_route@9:
+    // smart_contracts/ride_escrow/contract.py:100
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/ride_escrow/contract.py:100
+    // @arc4.abimethod
+    callsub cancel_trip
+    intc_0 // 1
+    return
+
+main_book_trip_route@8:
+    // smart_contracts/ride_escrow/contract.py:65
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_3 // 32
     ==
     assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
     txn GroupIndex
-    intc_1 // 1
+    intc_0 // 1
     -
     dup
     gtxns TypeEnum
-    intc_1 // pay
+    intc_0 // pay
     ==
     assert // transaction type is pay
-    // smart_contracts/ride_escrow/contract.py:22
+    // smart_contracts/ride_escrow/contract.py:65
     // @arc4.abimethod
     callsub book_trip
-    intc_1 // 1
+    intc_0 // 1
     return
 
-main_bare_routing@8:
-    // smart_contracts/ride_escrow/contract.py:9
-    // class RideEscrow(ARC4Contract):
+main_get_ride_route@7:
+    // smart_contracts/ride_escrow/contract.py:59
+    // @arc4.abimethod(readonly=True)
     txn OnCompletion
-    bnz main_after_if_else@10
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/ride_escrow/contract.py:59
+    // @arc4.abimethod(readonly=True)
+    callsub get_ride
+    pushbytes 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return
+
+main_set_admin_route@6:
+    // smart_contracts/ride_escrow/contract.py:53
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 1
+    ==
+    assert // invalid number of bytes for arc4.uint8
+    btoi
+    txnas Accounts
+    // smart_contracts/ride_escrow/contract.py:53
+    // @arc4.abimethod
+    callsub set_admin
+    intc_0 // 1
+    return
+
+main_create_route@5:
+    // smart_contracts/ride_escrow/contract.py:44
+    // @arc4.abimethod(create="require")
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
     txn ApplicationID
     !
     assert // can only call when creating
-    intc_1 // 1
+    // smart_contracts/ride_escrow/contract.py:33
+    // class RideEscrow(ARC4Contract):
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 8 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 2
+    dup
+    len
+    pushint 8 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // smart_contracts/ride_escrow/contract.py:44
+    // @arc4.abimethod(create="require")
+    callsub create
+    intc_0 // 1
     return
 
 
-// smart_contracts.ride_escrow.contract.RideEscrow.book_trip(driver_addr: bytes, pay: uint64) -> void:
-book_trip:
-    // smart_contracts/ride_escrow/contract.py:22-23
-    // @arc4.abimethod
-    // def book_trip(self, driver_addr: arc4.Address, pay: gtxn.PaymentTransaction) -> None:
+// smart_contracts.ride_escrow.contract.RideEscrow.create(timeout_rounds: uint64, dispute_timeout_rounds: uint64) -> void:
+create:
+    // smart_contracts/ride_escrow/contract.py:44-45
+    // @arc4.abimethod(create="require")
+    // def create(self, timeout_rounds: UInt64, dispute_timeout_rounds: UInt64) -> None:
     proto 2 0
-    // smart_contracts/ride_escrow/contract.py:24-25
-    // # Rider locks fare in app escrow and trip is marked as booked.
-    // assert self.status != UInt64(BOOKED)
-    intc_0 // 0
-    bytec_0 // "status"
-    app_global_get_ex
-    assert // check self.status exists
-    assert
-    // smart_contracts/ride_escrow/contract.py:26
-    // assert pay.receiver == Global.current_application_address
+    // smart_contracts/ride_escrow/contract.py:46
+    // assert timeout_rounds > UInt64(0), "Timeout rounds must be greater than 0"
+    frame_dig -2
+    assert // Timeout rounds must be greater than 0
+    // smart_contracts/ride_escrow/contract.py:47
+    // assert dispute_timeout_rounds > UInt64(0), "Dispute timeout rounds must be greater than 0"
+    frame_dig -1
+    assert // Dispute timeout rounds must be greater than 0
+    // smart_contracts/ride_escrow/contract.py:49
+    // self.admin = Global.creator_address
+    bytec_1 // "admin"
+    global CreatorAddress
+    app_global_put
+    // smart_contracts/ride_escrow/contract.py:50
+    // self.timeout_rounds = timeout_rounds
+    bytec_2 // "timeout_rounds"
+    frame_dig -2
+    app_global_put
+    // smart_contracts/ride_escrow/contract.py:51
+    // self.dispute_timeout_rounds = dispute_timeout_rounds
+    bytec_3 // "dispute_timeout_rounds"
+    frame_dig -1
+    app_global_put
+    retsub
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.set_admin(new_admin: bytes) -> void:
+set_admin:
+    // smart_contracts/ride_escrow/contract.py:53-54
+    // @arc4.abimethod
+    // def set_admin(self, new_admin: Account) -> None:
+    proto 1 0
+    // smart_contracts/ride_escrow/contract.py:55
+    // assert Txn.sender == Global.creator_address, "Only creator can set admin"
+    txn Sender
+    global CreatorAddress
+    ==
+    assert // Only creator can set admin
+    // smart_contracts/ride_escrow/contract.py:56
+    // assert new_admin != Global.zero_address, "Admin cannot be zero address"
+    frame_dig -1
+    global ZeroAddress
+    !=
+    assert // Admin cannot be zero address
+    // smart_contracts/ride_escrow/contract.py:57
+    // self.admin = new_admin
+    bytec_1 // "admin"
+    frame_dig -1
+    app_global_put
+    retsub
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.get_ride(rider: bytes, ride_id: bytes) -> bytes:
+get_ride:
+    // smart_contracts/ride_escrow/contract.py:59-60
+    // @arc4.abimethod(readonly=True)
+    // def get_ride(self, rider: arc4.Address, ride_id: arc4.String) -> RideState:
+    proto 2 1
+    // smart_contracts/ride_escrow/contract.py:61
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -2
+    frame_dig -1
+    concat
+    sha256
+    // smart_contracts/ride_escrow/contract.py:62
+    // assert key in self.rides, "Ride does not exist"
+    dup
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:63
+    // return self.rides[key].copy()
+    box_get
+    assert // check self.rides entry exists
+    retsub
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.book_trip(ride_id: bytes, driver: bytes, pay: uint64) -> void:
+book_trip:
+    // smart_contracts/ride_escrow/contract.py:65-71
+    // @arc4.abimethod
+    // def book_trip(
+    //     self,
+    //     ride_id: arc4.String,
+    //     driver: arc4.Address,
+    //     pay: gtxn.PaymentTransaction,
+    // ) -> None:
+    proto 3 0
+    // smart_contracts/ride_escrow/contract.py:72
+    // rider = arc4.Address(Txn.sender)
+    txn Sender
+    // smart_contracts/ride_escrow/contract.py:73
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    dup
+    frame_dig -3
+    concat
+    sha256
+    // smart_contracts/ride_escrow/contract.py:75
+    // assert key not in self.rides, "Ride already exists"
+    dup
+    box_len
+    bury 1
+    !
+    assert // Ride already exists
+    // smart_contracts/ride_escrow/contract.py:77
+    // pay.group_index + UInt64(1) == Txn.group_index
+    frame_dig -1
+    gtxns GroupIndex
+    intc_0 // 1
+    +
+    txn GroupIndex
+    ==
+    // smart_contracts/ride_escrow/contract.py:76-78
+    // assert (
+    //     pay.group_index + UInt64(1) == Txn.group_index
+    // ), "Payment transaction must immediately precede application call"
+    assert // Payment transaction must immediately precede application call
+    // smart_contracts/ride_escrow/contract.py:79
+    // assert pay.receiver == Global.current_application_address, "Payment receiver must be app address"
     frame_dig -1
     gtxns Receiver
     global CurrentApplicationAddress
     ==
-    assert
-    // smart_contracts/ride_escrow/contract.py:27
-    // assert pay.amount > UInt64(0)
-    frame_dig -1
-    gtxns Amount
-    dup
-    assert
-    // smart_contracts/ride_escrow/contract.py:28
-    // assert pay.sender == Txn.sender
+    assert // Payment receiver must be app address
+    // smart_contracts/ride_escrow/contract.py:80
+    // assert pay.sender == Txn.sender, "Payment sender must be transaction sender"
     frame_dig -1
     gtxns Sender
     txn Sender
     ==
-    assert
-    // smart_contracts/ride_escrow/contract.py:30
-    // self.driver = driver_addr.native
-    bytec_2 // "driver"
+    assert // Payment sender must be transaction sender
+    // smart_contracts/ride_escrow/contract.py:81
+    // assert pay.close_remainder_to == Global.zero_address, "Payment close_remainder_to must be zero address"
+    frame_dig -1
+    gtxns CloseRemainderTo
+    global ZeroAddress
+    ==
+    assert // Payment close_remainder_to must be zero address
+    // smart_contracts/ride_escrow/contract.py:82
+    // assert pay.rekey_to == Global.zero_address, "Payment rekey_to must be zero address"
+    frame_dig -1
+    gtxns RekeyTo
+    global ZeroAddress
+    ==
+    assert // Payment rekey_to must be zero address
+    // smart_contracts/ride_escrow/contract.py:83
+    // assert Txn.rekey_to == Global.zero_address, "Transaction rekey_to must be zero address"
+    txn RekeyTo
+    global ZeroAddress
+    ==
+    assert // Transaction rekey_to must be zero address
+    // smart_contracts/ride_escrow/contract.py:84
+    // assert pay.amount >= UInt64(MIN_FARE + BOX_MBR), "Payment amount below minimum fare + MBR"
+    frame_dig -1
+    gtxns Amount
+    dup
+    pushint 147700 // 147700
+    >=
+    assert // Payment amount below minimum fare + MBR
+    // smart_contracts/ride_escrow/contract.py:85
+    // assert driver.native != Txn.sender, "Driver cannot be rider"
     frame_dig -2
-    app_global_put
-    // smart_contracts/ride_escrow/contract.py:31
-    // self.rider = Txn.sender
-    bytec_3 // "rider"
     txn Sender
-    app_global_put
-    // smart_contracts/ride_escrow/contract.py:32
-    // self.amount = pay.amount
-    bytec_1 // "amount"
-    swap
-    app_global_put
-    // smart_contracts/ride_escrow/contract.py:33
-    // self.status = UInt64(BOOKED)
-    bytec_0 // "status"
-    intc_0 // 0
-    app_global_put
-    retsub
-
-
-// smart_contracts.ride_escrow.contract.RideEscrow.complete_trip() -> void:
-complete_trip:
-    // smart_contracts/ride_escrow/contract.py:37-38
-    // # Driver completes trip and receives escrowed ALGO.
-    // assert self.status == UInt64(BOOKED)
-    intc_0 // 0
-    bytec_0 // "status"
-    app_global_get_ex
-    assert // check self.status exists
-    !
-    assert
-    // smart_contracts/ride_escrow/contract.py:39
-    // assert Txn.sender == self.driver
-    txn Sender
-    intc_0 // 0
-    bytec_2 // "driver"
-    app_global_get_ex
-    assert // check self.driver exists
-    swap
+    !=
+    assert // Driver cannot be rider
+    // smart_contracts/ride_escrow/contract.py:87
+    // fare = pay.amount - UInt64(BOX_MBR)
+    intc 4 // 47700
+    -
+    // smart_contracts/ride_escrow/contract.py:88
+    // fare_arc4 = arc4.UInt64(fare)
+    itob
+    // smart_contracts/ride_escrow/contract.py:90-96
+    // self.rides[key] = RideState(
+    //     rider=rider,
+    //     driver=driver,
+    //     amount=fare_arc4,
+    //     status=arc4.UInt8(STATUS_BOOKED),
+    //     round=arc4.UInt64(0),
+    // )
+    dig 2
+    frame_dig -2
+    concat
     dig 1
-    ==
-    assert
-    // smart_contracts/ride_escrow/contract.py:41
-    // itxn.Payment(receiver=self.driver, amount=self.amount, fee=0).submit()
-    itxn_begin
-    intc_0 // 0
-    bytec_1 // "amount"
-    app_global_get_ex
-    assert // check self.amount exists
-    itxn_field Amount
-    itxn_field Receiver
-    intc_1 // pay
-    itxn_field TypeEnum
-    intc_0 // 0
-    itxn_field Fee
-    itxn_submit
-    // smart_contracts/ride_escrow/contract.py:42
-    // self.amount = UInt64(0)
-    bytec_1 // "amount"
-    intc_0 // 0
-    app_global_put
-    // smart_contracts/ride_escrow/contract.py:43
-    // self.status = UInt64(COMPLETED)
-    bytec_0 // "status"
-    intc_1 // 1
-    app_global_put
+    concat
+    // smart_contracts/ride_escrow/contract.py:94
+    // status=arc4.UInt8(STATUS_BOOKED),
+    pushbytes 0x00
+    // smart_contracts/ride_escrow/contract.py:90-96
+    // self.rides[key] = RideState(
+    //     rider=rider,
+    //     driver=driver,
+    //     amount=fare_arc4,
+    //     status=arc4.UInt8(STATUS_BOOKED),
+    //     round=arc4.UInt64(0),
+    // )
+    concat
+    // smart_contracts/ride_escrow/contract.py:95
+    // round=arc4.UInt64(0),
+    pushbytes 0x0000000000000000
+    // smart_contracts/ride_escrow/contract.py:90-96
+    // self.rides[key] = RideState(
+    //     rider=rider,
+    //     driver=driver,
+    //     amount=fare_arc4,
+    //     status=arc4.UInt8(STATUS_BOOKED),
+    //     round=arc4.UInt64(0),
+    // )
+    concat
+    uncover 2
+    swap
+    box_put
+    // smart_contracts/ride_escrow/contract.py:98
+    // arc4.emit("Booked(string,address,address,uint64)", ride_id, rider, driver, fare_arc4)
+    bytec_0 // 0x004a
+    uncover 2
+    concat
+    frame_dig -2
+    concat
+    swap
+    concat
+    frame_dig -3
+    concat
+    pushbytes 0xb17aec61 // method "Booked(string,address,address,uint64)"
+    swap
+    concat
+    log
     retsub
 
 
-// smart_contracts.ride_escrow.contract.RideEscrow.cancel_trip() -> void:
+// smart_contracts.ride_escrow.contract.RideEscrow.cancel_trip(rider: bytes, ride_id: bytes) -> void:
 cancel_trip:
-    // smart_contracts/ride_escrow/contract.py:47-48
-    // # Rider cancels trip and gets refunded from escrow.
-    // assert self.status == UInt64(BOOKED)
-    intc_0 // 0
-    bytec_0 // "status"
-    app_global_get_ex
-    assert // check self.status exists
+    // smart_contracts/ride_escrow/contract.py:100-101
+    // @arc4.abimethod
+    // def cancel_trip(self, rider: arc4.Address, ride_id: arc4.String) -> None:
+    proto 2 0
+    // smart_contracts/ride_escrow/contract.py:102
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -2
+    frame_dig -1
+    concat
+    sha256
+    dupn 2
+    // smart_contracts/ride_escrow/contract.py:103
+    // assert key in self.rides, "Ride does not exist"
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:105
+    // ride = self.rides[key].copy()
+    box_get
+    swap
+    dup
+    uncover 2
+    assert // check self.rides entry exists
+    // smart_contracts/ride_escrow/contract.py:106
+    // assert ride.status.native == STATUS_BOOKED, "Ride is not in BOOKED status"
+    pushint 72 // 72
+    getbyte
     !
-    assert
-    // smart_contracts/ride_escrow/contract.py:49
-    // assert Txn.sender == self.rider
+    assert // Ride is not in BOOKED status
+    // smart_contracts/ride_escrow/contract.py:108
+    // Txn.sender == rider.native or Txn.sender == ride.driver.native
     txn Sender
-    intc_0 // 0
-    bytec_3 // "rider"
-    app_global_get_ex
-    assert // check self.rider exists
+    frame_dig -2
+    ==
+    bnz cancel_trip_bool_true@2
+    txn Sender
+    frame_dig 1
+    extract 32 32 // on error: Index access is out of bounds
+    ==
+    bz cancel_trip_bool_false@3
+
+cancel_trip_bool_true@2:
+    intc_0 // 1
+
+cancel_trip_bool_merge@4:
+    // smart_contracts/ride_escrow/contract.py:107-109
+    // assert (
+    //     Txn.sender == rider.native or Txn.sender == ride.driver.native
+    // ), "Only rider or driver can cancel"
+    assert // Only rider or driver can cancel
+    // smart_contracts/ride_escrow/contract.py:111
+    // fare = ride.amount.native
+    frame_dig 1
+    dup
+    extract 64 8 // on error: Index access is out of bounds
+    dig 1
+    pushint 64 // 64
+    extract_uint64
+    // smart_contracts/ride_escrow/contract.py:112
+    // driver = ride.driver
+    uncover 2
+    extract 32 32 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:114
+    // refund_amount = fare + UInt64(BOX_MBR)
+    swap
+    intc 4 // 47700
+    +
+    // smart_contracts/ride_escrow/contract.py:116
+    // del self.rides[key]
+    frame_dig 0
+    box_del
+    pop
+    // smart_contracts/ride_escrow/contract.py:118
+    // itxn.Payment(receiver=rider.native, amount=refund_amount, fee=0).submit()
+    itxn_begin
+    itxn_field Amount
+    frame_dig -2
+    itxn_field Receiver
+    intc_0 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    itxn_submit
+    // smart_contracts/ride_escrow/contract.py:119
+    // arc4.emit("Cancelled(string,address,address,uint64)", ride_id, rider, driver, amount_arc4)
+    bytec_0 // 0x004a
+    frame_dig -2
+    concat
+    swap
+    concat
+    swap
+    concat
+    frame_dig -1
+    concat
+    bytec 4 // method "Cancelled(string,address,address,uint64)"
+    swap
+    concat
+    log
+    retsub
+
+cancel_trip_bool_false@3:
+    intc_1 // 0
+    b cancel_trip_bool_merge@4
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.start_ride(rider: bytes, ride_id: bytes) -> void:
+start_ride:
+    // smart_contracts/ride_escrow/contract.py:121-122
+    // @arc4.abimethod
+    // def start_ride(self, rider: arc4.Address, ride_id: arc4.String) -> None:
+    proto 2 0
+    // smart_contracts/ride_escrow/contract.py:123
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -2
+    frame_dig -1
+    concat
+    sha256
+    // smart_contracts/ride_escrow/contract.py:124
+    // assert key in self.rides, "Ride does not exist"
+    dup
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:126
+    // ride = self.rides[key].copy()
+    dup
+    box_get
+    assert // check self.rides entry exists
+    // smart_contracts/ride_escrow/contract.py:127
+    // assert Txn.sender == ride.driver.native, "Only driver can start ride"
+    txn Sender
+    dig 1
+    extract 32 32 // on error: Index access is out of bounds
     swap
     dig 1
     ==
-    assert
-    // smart_contracts/ride_escrow/contract.py:51
-    // itxn.Payment(receiver=self.rider, amount=self.amount, fee=0).submit()
+    assert // Only driver can start ride
+    // smart_contracts/ride_escrow/contract.py:128
+    // assert ride.status.native == STATUS_BOOKED, "Ride is not in BOOKED status"
+    dig 1
+    pushint 72 // 72
+    getbyte
+    !
+    assert // Ride is not in BOOKED status
+    // smart_contracts/ride_escrow/contract.py:131
+    // rider=ride.rider,
+    dig 1
+    extract 0 32 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:133
+    // amount=ride.amount,
+    dig 2
+    extract 64 8 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:135
+    // round=ride.round,
+    uncover 3
+    extract 73 8 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:130-136
+    // self.rides[key] = RideState(
+    //     rider=ride.rider,
+    //     driver=ride.driver,
+    //     amount=ride.amount,
+    //     status=arc4.UInt8(STATUS_STARTED),
+    //     round=ride.round,
+    // )
+    uncover 2
+    dig 3
+    concat
+    dig 2
+    concat
+    // smart_contracts/ride_escrow/contract.py:134
+    // status=arc4.UInt8(STATUS_STARTED),
+    pushbytes 0x01
+    // smart_contracts/ride_escrow/contract.py:130-136
+    // self.rides[key] = RideState(
+    //     rider=ride.rider,
+    //     driver=ride.driver,
+    //     amount=ride.amount,
+    //     status=arc4.UInt8(STATUS_STARTED),
+    //     round=ride.round,
+    // )
+    concat
+    swap
+    concat
+    uncover 3
+    swap
+    box_put
+    // smart_contracts/ride_escrow/contract.py:138
+    // arc4.emit("Started(string,address,address,uint64)", ride_id, rider, ride.driver, ride.amount)
+    bytec_0 // 0x004a
+    frame_dig -2
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    frame_dig -1
+    concat
+    pushbytes 0xa8da5ed9 // method "Started(string,address,address,uint64)"
+    swap
+    concat
+    log
+    retsub
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.mark_dropoff(rider: bytes, ride_id: bytes) -> void:
+mark_dropoff:
+    // smart_contracts/ride_escrow/contract.py:140-141
+    // @arc4.abimethod
+    // def mark_dropoff(self, rider: arc4.Address, ride_id: arc4.String) -> None:
+    proto 2 0
+    // smart_contracts/ride_escrow/contract.py:142
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -2
+    frame_dig -1
+    concat
+    sha256
+    // smart_contracts/ride_escrow/contract.py:143
+    // assert key in self.rides, "Ride does not exist"
+    dup
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:145
+    // ride = self.rides[key].copy()
+    dup
+    box_get
+    assert // check self.rides entry exists
+    // smart_contracts/ride_escrow/contract.py:146
+    // assert Txn.sender == ride.driver.native, "Only driver can mark dropoff"
+    txn Sender
+    dig 1
+    extract 32 32 // on error: Index access is out of bounds
+    swap
+    dig 1
+    ==
+    assert // Only driver can mark dropoff
+    // smart_contracts/ride_escrow/contract.py:147
+    // assert ride.status.native == STATUS_STARTED, "Ride is not in STARTED status"
+    dig 1
+    pushint 72 // 72
+    getbyte
+    intc_0 // 1
+    ==
+    assert // Ride is not in STARTED status
+    // smart_contracts/ride_escrow/contract.py:150
+    // rider=ride.rider,
+    dig 1
+    extract 0 32 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:152
+    // amount=ride.amount,
+    uncover 2
+    extract 64 8 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:154
+    // round=arc4.UInt64(Global.round),
+    global Round
+    itob
+    // smart_contracts/ride_escrow/contract.py:149-155
+    // self.rides[key] = RideState(
+    //     rider=ride.rider,
+    //     driver=ride.driver,
+    //     amount=ride.amount,
+    //     status=arc4.UInt8(STATUS_DROPPED),
+    //     round=arc4.UInt64(Global.round),
+    // )
+    uncover 2
+    dig 3
+    concat
+    dig 2
+    concat
+    // smart_contracts/ride_escrow/contract.py:153
+    // status=arc4.UInt8(STATUS_DROPPED),
+    pushbytes 0x02
+    // smart_contracts/ride_escrow/contract.py:149-155
+    // self.rides[key] = RideState(
+    //     rider=ride.rider,
+    //     driver=ride.driver,
+    //     amount=ride.amount,
+    //     status=arc4.UInt8(STATUS_DROPPED),
+    //     round=arc4.UInt64(Global.round),
+    // )
+    concat
+    swap
+    concat
+    uncover 3
+    swap
+    box_put
+    // smart_contracts/ride_escrow/contract.py:157
+    // arc4.emit("Dropped(string,address,address,uint64)", ride_id, rider, ride.driver, ride.amount)
+    bytec_0 // 0x004a
+    frame_dig -2
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    frame_dig -1
+    concat
+    pushbytes 0x129ecc2a // method "Dropped(string,address,address,uint64)"
+    swap
+    concat
+    log
+    retsub
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.confirm_complete(rider: bytes, ride_id: bytes) -> void:
+confirm_complete:
+    // smart_contracts/ride_escrow/contract.py:159-160
+    // @arc4.abimethod
+    // def confirm_complete(self, rider: arc4.Address, ride_id: arc4.String) -> None:
+    proto 2 0
+    // smart_contracts/ride_escrow/contract.py:161
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -2
+    frame_dig -1
+    concat
+    sha256
+    dupn 2
+    // smart_contracts/ride_escrow/contract.py:162
+    // assert key in self.rides, "Ride does not exist"
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:164
+    // ride = self.rides[key].copy()
+    box_get
+    swap
+    dup
+    uncover 2
+    assert // check self.rides entry exists
+    // smart_contracts/ride_escrow/contract.py:165
+    // assert Txn.sender == rider.native, "Only rider can confirm completion"
+    txn Sender
+    frame_dig -2
+    ==
+    assert // Only rider can confirm completion
+    // smart_contracts/ride_escrow/contract.py:166
+    // status = ride.status.native
+    pushint 72 // 72
+    getbyte
+    dup
+    // smart_contracts/ride_escrow/contract.py:168
+    // status == STATUS_STARTED or status == STATUS_DROPPED
+    intc_0 // 1
+    ==
+    bnz confirm_complete_bool_true@2
+    frame_dig 2
+    intc_2 // 2
+    ==
+    bz confirm_complete_bool_false@3
+
+confirm_complete_bool_true@2:
+    intc_0 // 1
+
+confirm_complete_bool_merge@4:
+    // smart_contracts/ride_escrow/contract.py:167-169
+    // assert (
+    //     status == STATUS_STARTED or status == STATUS_DROPPED
+    // ), "Ride must be STARTED or DROPPED"
+    assert // Ride must be STARTED or DROPPED
+    // smart_contracts/ride_escrow/contract.py:171
+    // fare = ride.amount.native
+    frame_dig 1
+    dup
+    extract 64 8 // on error: Index access is out of bounds
+    dig 1
+    pushint 64 // 64
+    extract_uint64
+    // smart_contracts/ride_escrow/contract.py:172
+    // driver = ride.driver
+    uncover 2
+    extract 32 32 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:175
+    // del self.rides[key]
+    frame_dig 0
+    box_del
+    pop
+    // smart_contracts/ride_escrow/contract.py:177
+    // itxn.Payment(receiver=driver.native, amount=fare, fee=0).submit()
     itxn_begin
-    intc_0 // 0
-    bytec_1 // "amount"
-    app_global_get_ex
-    assert // check self.amount exists
+    swap
     itxn_field Amount
+    dup
     itxn_field Receiver
-    intc_1 // pay
+    intc_0 // pay
     itxn_field TypeEnum
-    intc_0 // 0
+    intc_1 // 0
     itxn_field Fee
     itxn_submit
-    // smart_contracts/ride_escrow/contract.py:52
-    // self.amount = UInt64(0)
-    bytec_1 // "amount"
-    intc_0 // 0
-    app_global_put
-    // smart_contracts/ride_escrow/contract.py:53
-    // self.status = UInt64(CANCELLED)
-    bytec_0 // "status"
+    // smart_contracts/ride_escrow/contract.py:178
+    // itxn.Payment(receiver=rider.native, amount=UInt64(BOX_MBR), fee=0).submit()
+    itxn_begin
+    intc 4 // 47700
+    itxn_field Amount
+    frame_dig -2
+    itxn_field Receiver
+    intc_0 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    itxn_submit
+    // smart_contracts/ride_escrow/contract.py:180
+    // arc4.emit("Completed(string,address,address,uint64)", ride_id, rider, driver, amount_arc4)
+    bytec_0 // 0x004a
+    frame_dig -2
+    concat
+    swap
+    concat
+    swap
+    concat
+    frame_dig -1
+    concat
+    pushbytes 0xb70c8e38 // method "Completed(string,address,address,uint64)"
+    swap
+    concat
+    log
+    retsub
+
+confirm_complete_bool_false@3:
+    intc_1 // 0
+    b confirm_complete_bool_merge@4
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.claim_after_timeout(rider: bytes, ride_id: bytes) -> void:
+claim_after_timeout:
+    // smart_contracts/ride_escrow/contract.py:182-183
+    // @arc4.abimethod
+    // def claim_after_timeout(self, rider: arc4.Address, ride_id: arc4.String) -> None:
+    proto 2 0
+    // smart_contracts/ride_escrow/contract.py:184
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -2
+    frame_dig -1
+    concat
+    sha256
+    // smart_contracts/ride_escrow/contract.py:185
+    // assert key in self.rides, "Ride does not exist"
+    dup
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:187
+    // ride = self.rides[key].copy()
+    dup
+    box_get
+    assert // check self.rides entry exists
+    // smart_contracts/ride_escrow/contract.py:188
+    // assert Txn.sender == ride.driver.native, "Only driver can claim after timeout"
+    txn Sender
+    dig 1
+    extract 32 32 // on error: Index access is out of bounds
+    swap
+    dig 1
+    ==
+    assert // Only driver can claim after timeout
+    // smart_contracts/ride_escrow/contract.py:189
+    // assert ride.status.native == STATUS_DROPPED, "Ride must be in DROPPED status"
+    dig 1
+    pushint 72 // 72
+    getbyte
     intc_2 // 2
-    app_global_put
+    ==
+    assert // Ride must be in DROPPED status
+    // smart_contracts/ride_escrow/contract.py:191
+    // Global.round >= ride.round.native + self.timeout_rounds
+    global Round
+    dig 2
+    pushint 73 // 73
+    extract_uint64
+    intc_1 // 0
+    bytec_2 // "timeout_rounds"
+    app_global_get_ex
+    assert // check self.timeout_rounds exists
+    +
+    >=
+    // smart_contracts/ride_escrow/contract.py:190-192
+    // assert (
+    //     Global.round >= ride.round.native + self.timeout_rounds
+    // ), "Timeout has not elapsed"
+    assert // Timeout has not elapsed
+    // smart_contracts/ride_escrow/contract.py:194
+    // fare = ride.amount.native
+    dig 1
+    extract 64 8 // on error: Index access is out of bounds
+    uncover 2
+    pushint 64 // 64
+    extract_uint64
+    // smart_contracts/ride_escrow/contract.py:198
+    // del self.rides[key]
+    uncover 3
+    box_del
+    pop
+    // smart_contracts/ride_escrow/contract.py:200
+    // itxn.Payment(receiver=driver.native, amount=fare, fee=0).submit()
+    itxn_begin
+    itxn_field Amount
+    dig 1
+    itxn_field Receiver
+    intc_0 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    itxn_submit
+    // smart_contracts/ride_escrow/contract.py:201
+    // itxn.Payment(receiver=rider.native, amount=UInt64(BOX_MBR), fee=0).submit()
+    itxn_begin
+    intc 4 // 47700
+    itxn_field Amount
+    frame_dig -2
+    itxn_field Receiver
+    intc_0 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    itxn_submit
+    // smart_contracts/ride_escrow/contract.py:203
+    // arc4.emit("Claimed(string,address,address,uint64)", ride_id, rider, driver, amount_arc4)
+    bytec_0 // 0x004a
+    frame_dig -2
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    frame_dig -1
+    concat
+    pushbytes 0x9af029c3 // method "Claimed(string,address,address,uint64)"
+    swap
+    concat
+    log
+    retsub
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.raise_dispute(rider: bytes, ride_id: bytes) -> void:
+raise_dispute:
+    // smart_contracts/ride_escrow/contract.py:205-206
+    // @arc4.abimethod
+    // def raise_dispute(self, rider: arc4.Address, ride_id: arc4.String) -> None:
+    proto 2 0
+    // smart_contracts/ride_escrow/contract.py:207
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -2
+    frame_dig -1
+    concat
+    sha256
+    dupn 2
+    // smart_contracts/ride_escrow/contract.py:208
+    // assert key in self.rides, "Ride does not exist"
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:210
+    // ride = self.rides[key].copy()
+    box_get
+    swap
+    dup
+    uncover 2
+    assert // check self.rides entry exists
+    // smart_contracts/ride_escrow/contract.py:211
+    // assert Txn.sender == rider.native, "Only rider can raise dispute"
+    txn Sender
+    frame_dig -2
+    ==
+    assert // Only rider can raise dispute
+    // smart_contracts/ride_escrow/contract.py:213
+    // status = ride.status.native
+    pushint 72 // 72
+    getbyte
+    dup
+    // smart_contracts/ride_escrow/contract.py:214
+    // if status == STATUS_STARTED:
+    intc_0 // 1
+    ==
+    bnz raise_dispute_after_if_else@6
+    // smart_contracts/ride_escrow/contract.py:216
+    // elif status == STATUS_DROPPED:
+    frame_dig 2
+    intc_2 // 2
+    ==
+    assert // Ride cannot be disputed in current status
+    // smart_contracts/ride_escrow/contract.py:218
+    // Global.round < ride.round.native + self.timeout_rounds
+    global Round
+    frame_dig 1
+    pushint 73 // 73
+    extract_uint64
+    intc_1 // 0
+    bytec_2 // "timeout_rounds"
+    app_global_get_ex
+    assert // check self.timeout_rounds exists
+    +
+    <
+    // smart_contracts/ride_escrow/contract.py:217-219
+    // assert (
+    //     Global.round < ride.round.native + self.timeout_rounds
+    // ), "Timeout has already elapsed"
+    assert // Timeout has already elapsed
+
+raise_dispute_after_if_else@6:
+    // smart_contracts/ride_escrow/contract.py:224
+    // rider=ride.rider,
+    frame_dig 1
+    dup
+    extract 0 32 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:225
+    // driver=ride.driver,
+    dig 1
+    extract 32 32 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:226
+    // amount=ride.amount,
+    uncover 2
+    extract 64 8 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:228
+    // round=arc4.UInt64(Global.round),
+    global Round
+    itob
+    // smart_contracts/ride_escrow/contract.py:223-229
+    // self.rides[key] = RideState(
+    //     rider=ride.rider,
+    //     driver=ride.driver,
+    //     amount=ride.amount,
+    //     status=arc4.UInt8(STATUS_DISPUTED),
+    //     round=arc4.UInt64(Global.round),
+    // )
+    uncover 3
+    dig 3
+    concat
+    dig 2
+    concat
+    // smart_contracts/ride_escrow/contract.py:227
+    // status=arc4.UInt8(STATUS_DISPUTED),
+    pushbytes 0x03
+    // smart_contracts/ride_escrow/contract.py:223-229
+    // self.rides[key] = RideState(
+    //     rider=ride.rider,
+    //     driver=ride.driver,
+    //     amount=ride.amount,
+    //     status=arc4.UInt8(STATUS_DISPUTED),
+    //     round=arc4.UInt64(Global.round),
+    // )
+    concat
+    swap
+    concat
+    frame_dig 0
+    swap
+    box_put
+    // smart_contracts/ride_escrow/contract.py:231
+    // arc4.emit("Disputed(string,address,address,uint64)", ride_id, rider, ride.driver, ride.amount)
+    bytec_0 // 0x004a
+    frame_dig -2
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    frame_dig -1
+    concat
+    pushbytes 0xf35e6a60 // method "Disputed(string,address,address,uint64)"
+    swap
+    concat
+    log
+    retsub
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.resolve_dispute(rider: bytes, ride_id: bytes, pay_driver: uint64) -> void:
+resolve_dispute:
+    // smart_contracts/ride_escrow/contract.py:233-239
+    // @arc4.abimethod
+    // def resolve_dispute(
+    //     self,
+    //     rider: arc4.Address,
+    //     ride_id: arc4.String,
+    //     pay_driver: bool,
+    // ) -> None:
+    proto 3 0
+    // smart_contracts/ride_escrow/contract.py:240
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -3
+    frame_dig -2
+    concat
+    sha256
+    // smart_contracts/ride_escrow/contract.py:241
+    // assert key in self.rides, "Ride does not exist"
+    dup
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:243
+    // ride = self.rides[key].copy()
+    dup
+    box_get
+    assert // check self.rides entry exists
+    // smart_contracts/ride_escrow/contract.py:244
+    // assert Txn.sender == self.admin, "Only admin can resolve dispute"
+    txn Sender
+    intc_1 // 0
+    bytec_1 // "admin"
+    app_global_get_ex
+    assert // check self.admin exists
+    ==
+    assert // Only admin can resolve dispute
+    // smart_contracts/ride_escrow/contract.py:245
+    // assert ride.status.native == STATUS_DISPUTED, "Ride is not in DISPUTED status"
+    dup
+    pushint 72 // 72
+    getbyte
+    pushint 3 // 3
+    ==
+    assert // Ride is not in DISPUTED status
+    // smart_contracts/ride_escrow/contract.py:247
+    // fare = ride.amount.native
+    dup
+    extract 64 8 // on error: Index access is out of bounds
+    cover 2
+    dup
+    pushint 64 // 64
+    extract_uint64
+    cover 2
+    // smart_contracts/ride_escrow/contract.py:248
+    // driver = ride.driver
+    extract 32 32 // on error: Index access is out of bounds
+    cover 2
+    // smart_contracts/ride_escrow/contract.py:251
+    // del self.rides[key]
+    box_del
+    pop
+    // smart_contracts/ride_escrow/contract.py:253
+    // if pay_driver:
+    frame_dig -1
+    bz resolve_dispute_else_body@4
+    // smart_contracts/ride_escrow/contract.py:254
+    // itxn.Payment(receiver=driver.native, amount=fare, fee=0).submit()
+    itxn_begin
+    itxn_field Amount
+    frame_dig 1
+    itxn_field Receiver
+    intc_0 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    itxn_submit
+    // smart_contracts/ride_escrow/contract.py:255
+    // itxn.Payment(receiver=rider.native, amount=UInt64(BOX_MBR), fee=0).submit()
+    itxn_begin
+    intc 4 // 47700
+    itxn_field Amount
+    frame_dig -3
+    itxn_field Receiver
+    intc_0 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    itxn_submit
+
+resolve_dispute_after_if_else@6:
+    // smart_contracts/ride_escrow/contract.py:260
+    // arc4.emit("Resolved(string,address,address,uint64)", ride_id, rider, driver, amount_arc4)
+    bytec_0 // 0x004a
+    frame_dig -3
+    concat
+    frame_dig 1
+    concat
+    frame_dig 0
+    concat
+    frame_dig -2
+    concat
+    pushbytes 0xcd062520 // method "Resolved(string,address,address,uint64)"
+    swap
+    concat
+    log
+    retsub
+
+resolve_dispute_else_body@4:
+    // smart_contracts/ride_escrow/contract.py:257
+    // refund_amount = fare + UInt64(BOX_MBR)
+    intc 4 // 47700
+    +
+    // smart_contracts/ride_escrow/contract.py:258
+    // itxn.Payment(receiver=rider.native, amount=refund_amount, fee=0).submit()
+    itxn_begin
+    itxn_field Amount
+    frame_dig -3
+    itxn_field Receiver
+    intc_0 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    itxn_submit
+    b resolve_dispute_after_if_else@6
+
+
+// smart_contracts.ride_escrow.contract.RideEscrow.reclaim_after_dispute_timeout(rider: bytes, ride_id: bytes) -> void:
+reclaim_after_dispute_timeout:
+    // smart_contracts/ride_escrow/contract.py:262-267
+    // @arc4.abimethod
+    // def reclaim_after_dispute_timeout(
+    //     self,
+    //     rider: arc4.Address,
+    //     ride_id: arc4.String,
+    // ) -> None:
+    proto 2 0
+    // smart_contracts/ride_escrow/contract.py:268
+    // key = op.sha256(rider.bytes + ride_id.bytes)
+    frame_dig -2
+    frame_dig -1
+    concat
+    sha256
+    // smart_contracts/ride_escrow/contract.py:269
+    // assert key in self.rides, "Ride does not exist"
+    dup
+    box_len
+    bury 1
+    assert // Ride does not exist
+    // smart_contracts/ride_escrow/contract.py:271
+    // ride = self.rides[key].copy()
+    dup
+    box_get
+    assert // check self.rides entry exists
+    // smart_contracts/ride_escrow/contract.py:272
+    // assert Txn.sender == rider.native, "Only rider can reclaim after dispute timeout"
+    txn Sender
+    frame_dig -2
+    ==
+    assert // Only rider can reclaim after dispute timeout
+    // smart_contracts/ride_escrow/contract.py:273
+    // assert ride.status.native == STATUS_DISPUTED, "Ride is not in DISPUTED status"
+    dup
+    pushint 72 // 72
+    getbyte
+    pushint 3 // 3
+    ==
+    assert // Ride is not in DISPUTED status
+    // smart_contracts/ride_escrow/contract.py:275
+    // Global.round >= ride.round.native + self.dispute_timeout_rounds
+    global Round
+    dig 1
+    pushint 73 // 73
+    extract_uint64
+    intc_1 // 0
+    bytec_3 // "dispute_timeout_rounds"
+    app_global_get_ex
+    assert // check self.dispute_timeout_rounds exists
+    +
+    >=
+    // smart_contracts/ride_escrow/contract.py:274-276
+    // assert (
+    //     Global.round >= ride.round.native + self.dispute_timeout_rounds
+    // ), "Dispute timeout has not elapsed"
+    assert // Dispute timeout has not elapsed
+    // smart_contracts/ride_escrow/contract.py:278
+    // fare = ride.amount.native
+    dup
+    extract 64 8 // on error: Index access is out of bounds
+    dig 1
+    pushint 64 // 64
+    extract_uint64
+    // smart_contracts/ride_escrow/contract.py:279
+    // driver = ride.driver
+    uncover 2
+    extract 32 32 // on error: Index access is out of bounds
+    // smart_contracts/ride_escrow/contract.py:281
+    // refund_amount = fare + UInt64(BOX_MBR)
+    swap
+    intc 4 // 47700
+    +
+    // smart_contracts/ride_escrow/contract.py:283
+    // del self.rides[key]
+    uncover 3
+    box_del
+    pop
+    // smart_contracts/ride_escrow/contract.py:285
+    // itxn.Payment(receiver=rider.native, amount=refund_amount, fee=0).submit()
+    itxn_begin
+    itxn_field Amount
+    frame_dig -2
+    itxn_field Receiver
+    intc_0 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    itxn_submit
+    // smart_contracts/ride_escrow/contract.py:286
+    // arc4.emit("Cancelled(string,address,address,uint64)", ride_id, rider, driver, amount_arc4)
+    bytec_0 // 0x004a
+    frame_dig -2
+    concat
+    swap
+    concat
+    swap
+    concat
+    frame_dig -1
+    concat
+    bytec 4 // method "Cancelled(string,address,address,uint64)"
+    swap
+    concat
+    log
     retsub
