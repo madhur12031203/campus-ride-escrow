@@ -118,7 +118,7 @@ type BookRideFormProps = {
 
 function LocationIcon() {
   return (
-    <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
@@ -127,7 +127,7 @@ function LocationIcon() {
 
 function FlagIcon() {
   return (
-    <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="h-5 w-5 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
     </svg>
   );
@@ -282,8 +282,13 @@ export default function BookRideForm({
     e.preventDefault();
     setError(null);
 
-    if (!originPlaceId || !destinationPlaceId) {
-      setError("Please select both pickup and destination locations");
+    if (!origin.trim() || !destination.trim()) {
+      setError("Please enter both pickup and destination locations");
+      return;
+    }
+
+    if (isPlacesEnabled && (!originPlaceId || !destinationPlaceId)) {
+      setError("Please select both pickup and destination locations from the list");
       return;
     }
     if (!walletConnected) {
@@ -296,29 +301,37 @@ export default function BookRideForm({
     try {
       let originLat: number;
       let originLng: number;
+      let destLat = 28.544;
+      let destLng = 77.401;
 
-      // If manual location (from geolocation), extract from placeId
-      if (originPlaceId.startsWith("manual_")) {
+      if (!isPlacesEnabled) {
+        originLat = 28.5355;
+        originLng = 77.391;
+        destLat = 28.544;
+        destLng = 77.401;
+      } else if (originPlaceId?.startsWith("manual_")) {
         const [, lat, lng] = originPlaceId.split("_");
         originLat = parseFloat(lat);
         originLng = parseFloat(lng);
       } else {
-        const originDetails = await fetchPlaceDetails(originPlaceId);
+        const originDetails = await fetchPlaceDetails(originPlaceId as string);
         originLat = originDetails.lat;
         originLng = originDetails.lng;
       }
 
-      const destDetails = await fetchPlaceDetails(destinationPlaceId);
-      const destLat = destDetails.lat;
-      const destLng = destDetails.lng;
+      if (isPlacesEnabled) {
+        const destDetails = await fetchPlaceDetails(destinationPlaceId as string);
+        destLat = destDetails.lat;
+        destLng = destDetails.lng;
+      }
 
       await onBookRide({
         originLat,
         originLng,
         destinationLat: destLat,
         destinationLng: destLng,
-        pickupPlaceName: originPlaceName,
-        destinationPlaceName: destinationPlaceName,
+        pickupPlaceName: originPlaceName ?? origin,
+        destinationPlaceName: destinationPlaceName ?? destination,
       });
 
       // Reset form after successful booking
@@ -344,34 +357,40 @@ export default function BookRideForm({
     !isLoadingPlaceDetails &&
     !hasActiveRide &&
     walletConnected &&
-    isPlacesEnabled;
+    Boolean(origin.trim()) &&
+    Boolean(destination.trim()) &&
+    (!isPlacesEnabled || Boolean(originPlaceId && destinationPlaceId));
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold text-slate-100">Book a Ride</h2>
-        <p className="mt-1 text-sm text-slate-400">
-          Enter pickup and destination locations
-        </p>
+      <div className="flex flex-col gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-950">Book a ride</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Choose verified locations, then publish the request to nearby drivers.
+          </p>
+        </div>
+        <span className="w-fit rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">
+          Live matching
+        </span>
         {!isPlacesEnabled && (
-          <p className="mt-2 text-xs text-amber-300">
-            Location search is unavailable because Google Maps API key is missing.
+          <p className="text-xs text-amber-700 sm:max-w-xs sm:text-right">
+            Google Maps key is missing, so manual pickup/drop text is enabled.
           </p>
         )}
       </div>
 
-      {/* Origin with Autocomplete */}
       <div className="relative">
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-200/10 bg-white/5 p-4">
+        <div className="flex min-h-[72px] items-center gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition focus-within:border-teal-400">
           <LocationIcon />
           <div className="flex-1">
             <div className="mb-1 flex items-center justify-between">
-              <span className="text-xs text-slate-400">Pickup</span>
+              <span className="text-xs font-semibold uppercase text-slate-500">Pickup</span>
               <button
                 type="button"
                 onClick={handleUseMyLocation}
                 disabled={isLoadingPlaceDetails || !isPlacesEnabled}
-                className="text-xs font-medium text-emerald-400 hover:text-emerald-300 disabled:opacity-50"
+                className="text-xs font-semibold text-teal-700 hover:text-teal-600 disabled:opacity-50"
               >
                 Use my location
               </button>
@@ -380,22 +399,27 @@ export default function BookRideForm({
               type="text"
               value={origin}
               onFocus={() => setActiveField("origin")}
-              onChange={(e) => setOrigin(e.target.value)}
+              onChange={(e) => {
+                setOrigin(e.target.value);
+                if (!isPlacesEnabled) {
+                  setOriginPlaceName(e.target.value);
+                }
+              }}
               placeholder="Pickup location"
-              className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-400 outline-none"
-              disabled={isBusy || isLoadingPlaceDetails || !isPlacesEnabled}
+              className="w-full bg-transparent text-sm text-slate-950 placeholder-slate-400 outline-none"
+              disabled={isBusy || isLoadingPlaceDetails}
               autoComplete="off"
             />
           </div>
         </div>
         {activeField === "origin" && originSuggestions.length > 0 && (
-          <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-slate-600/80 bg-slate-900 shadow-2xl">
+          <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl">
             {originSuggestions.slice(0, 6).map((p) => (
               <button
                 type="button"
                 key={p.placeId}
                 onClick={() => void handlePickSuggestion(p, "origin")}
-                className="block w-full truncate border-b border-slate-800 px-3 py-2.5 text-left text-sm text-slate-100 transition last:border-b-0 hover:bg-slate-800"
+                className="block w-full truncate border-b border-slate-100 px-3 py-2.5 text-left text-sm text-slate-700 transition last:border-b-0 hover:bg-slate-50"
               >
                 {p.text}
               </button>
@@ -404,32 +428,36 @@ export default function BookRideForm({
         )}
       </div>
 
-      {/* Destination with Autocomplete */}
       <div className="relative">
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-200/10 bg-white/5 p-4">
+        <div className="flex min-h-[72px] items-center gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition focus-within:border-teal-400">
           <FlagIcon />
           <div className="flex-1">
-            <span className="text-xs text-slate-400">Destination</span>
+            <span className="text-xs font-semibold uppercase text-slate-500">Destination</span>
             <input
               type="text"
               value={destination}
               onFocus={() => setActiveField("destination")}
-              onChange={(e) => setDestination(e.target.value)}
+              onChange={(e) => {
+                setDestination(e.target.value);
+                if (!isPlacesEnabled) {
+                  setDestinationPlaceName(e.target.value);
+                }
+              }}
               placeholder="Drop location"
-              className="mt-1 w-full bg-transparent text-sm text-slate-100 placeholder-slate-400 outline-none"
-              disabled={isBusy || isLoadingPlaceDetails || !isPlacesEnabled}
+              className="mt-1 w-full bg-transparent text-sm text-slate-950 placeholder-slate-400 outline-none"
+              disabled={isBusy || isLoadingPlaceDetails}
               autoComplete="off"
             />
           </div>
         </div>
         {activeField === "destination" && destinationSuggestions.length > 0 && (
-          <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-slate-600/80 bg-slate-900 shadow-2xl">
+          <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl">
             {destinationSuggestions.slice(0, 6).map((p) => (
               <button
                 type="button"
                 key={p.placeId}
                 onClick={() => void handlePickSuggestion(p, "destination")}
-                className="block w-full truncate border-b border-slate-800 px-3 py-2.5 text-left text-sm text-slate-100 transition last:border-b-0 hover:bg-slate-800"
+                className="block w-full truncate border-b border-slate-100 px-3 py-2.5 text-left text-sm text-slate-700 transition last:border-b-0 hover:bg-slate-50"
               >
                 {p.text}
               </button>
@@ -439,17 +467,17 @@ export default function BookRideForm({
       </div>
 
       {error && (
-        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-200">
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">
           {error}
         </div>
       )}
       {hasActiveRide && (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-200">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800">
           {activeRideMessage ?? "You already have an active ride"}
         </div>
       )}
       {!walletConnected && (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-200">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800">
           Connect wallet before booking a ride
         </div>
       )}
@@ -457,7 +485,7 @@ export default function BookRideForm({
       <button
         type="submit"
         disabled={!isValid}
-        className="w-full rounded-2xl bg-emerald-500 px-4 py-3.5 text-base font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full rounded-lg bg-teal-600 px-4 py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isBusy || isLoadingPlaceDetails ? "Processing…" : "Book Ride"}
       </button>

@@ -50,6 +50,7 @@ export default function CoreRideSharePanel({
   appAddress,
 }: CoreRideSharePanelProps) {
   const [profile, setProfile] = useState<UserProfileRow | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isRoleSaving, setIsRoleSaving] = useState(false);
@@ -68,6 +69,7 @@ export default function CoreRideSharePanel({
   }, []);
 
   const refreshProfile = useCallback(async () => {
+    setIsProfileLoading(true);
     const next = await ensureUserProfile(walletAddress);
     setProfile(next);
     if (next?.role === "passenger") {
@@ -76,11 +78,13 @@ export default function CoreRideSharePanel({
     } else {
       setPassengerHasActiveRide(false);
     }
+    setIsProfileLoading(false);
   }, [walletAddress]);
 
   useEffect(() => {
     void refreshProfile().catch((err: unknown) => {
       setError(err instanceof Error ? err.message : "Failed to load profile");
+      setIsProfileLoading(false);
     });
   }, [refreshProfile, walletAddress]);
 
@@ -95,15 +99,21 @@ export default function CoreRideSharePanel({
       setIsRoleSaving(true);
       setError(null);
       try {
-        await updateRole(profile.id, nextRole);
-        await refreshProfile();
+        const nextProfile = await updateRole(profile.id, nextRole);
+        setProfile(nextProfile);
+        if (nextProfile.role === "passenger") {
+          const activeRide = await fetchPassengerActiveRide(nextProfile.id);
+          setPassengerHasActiveRide(Boolean(activeRide));
+        } else {
+          setPassengerHasActiveRide(false);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to save role");
       } finally {
         setIsRoleSaving(false);
       }
     },
-    [profile, refreshProfile]
+    [profile]
   );
 
   const handleBookRide = useCallback(
@@ -224,10 +234,20 @@ export default function CoreRideSharePanel({
     [profile?.id, pushToast, refreshProfile, releasePayment]
   );
 
+  if (isProfileLoading) {
+    return (
+      <section className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center">
+        <p className="text-sm text-slate-600">Loading your ride profile...</p>
+      </section>
+    );
+  }
+
   if (!profile) {
     return (
-      <section className="rounded-2xl border border-slate-200/10 bg-white/5 p-6 text-center">
-        <p className="text-sm text-slate-300">Sign in to book or view rides.</p>
+      <section className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-center">
+        <p className="text-sm text-amber-800">
+          We could not load your account. Refresh the page or sign in again.
+        </p>
       </section>
     );
   }
@@ -240,13 +260,20 @@ export default function CoreRideSharePanel({
     <section className="space-y-4">
       <ToastStack toasts={toasts} />
       {error && (
-        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
           {error}
         </div>
       )}
 
       {role === "passenger" ? (
         <div className="space-y-6">
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+            <p className="text-xs font-semibold uppercase text-emerald-700">Passenger dashboard</p>
+            <h3 className="mt-1 text-lg font-semibold text-slate-950">Request a campus ride</h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Add pickup and drop locations, then nearby drivers can accept your request.
+            </p>
+          </div>
           <BookRideForm
             onBookRide={handleBookRide}
             isBusy={isBusy}
@@ -254,7 +281,7 @@ export default function CoreRideSharePanel({
             activeRideMessage="You already have an active ride"
             walletConnected={Boolean(walletAddress)}
           />
-          <p className="rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100">
+          <p className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-xs text-cyan-800">
             Payments are locked in an Algorand smart contract escrow and released
             automatically after ride completion.
           </p>
@@ -269,13 +296,22 @@ export default function CoreRideSharePanel({
           />
         </div>
       ) : (
-        <DriverRealtimeView
-          isBusy={isBusy}
-          onCompleteRide={handleDriverComplete}
-          paymentMessage={paymentMessage}
-          driverWalletAddress={walletAddress}
-          onToast={pushToast}
-        />
+        <div className="space-y-6">
+          <div className="rounded-lg border border-sky-200 bg-sky-50 p-4">
+            <p className="text-xs font-semibold uppercase text-sky-700">Driver dashboard</p>
+            <h3 className="mt-1 text-lg font-semibold text-slate-950">Accept nearby requests</h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Set your current location to see passenger bookings within 8 km.
+            </p>
+          </div>
+          <DriverRealtimeView
+            isBusy={isBusy}
+            onCompleteRide={handleDriverComplete}
+            paymentMessage={paymentMessage}
+            driverWalletAddress={walletAddress}
+            onToast={pushToast}
+          />
+        </div>
       )}
     </section>
   );
