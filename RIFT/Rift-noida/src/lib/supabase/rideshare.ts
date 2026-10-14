@@ -17,49 +17,55 @@ export async function getCurrentAuthUser() {
 }
 
 export async function ensureUserProfile(walletAddress?: string | null) {
-  const user = await getCurrentAuthUser();
-  if (!user) return null;
+  const profileResponse = await fetch("/api/profile", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
 
-  const profilePayload = {
-    id: user.id,
-    name:
-      (user.user_metadata?.full_name as string | undefined) ??
-      (user.email ? user.email.split("@")[0] : "Campus Rider"),
-    wallet_address: walletAddress ?? null,
+  if (profileResponse.status === 401) return null;
+
+  const profileJson = (await profileResponse.json()) as {
+    profile?: UserProfileRow;
+    error?: string;
   };
 
-  const { error: upsertError } = await supabase
-    .from("users")
-    .upsert(profilePayload, { onConflict: "id" });
-  if (upsertError) throw upsertError;
+  if (!profileResponse.ok || !profileJson.profile) {
+    throw new Error(profileJson.error || "Failed to load profile");
+  }
 
-  const { data, error } = await supabase
-    .from("users")
-    .select("id,name,role,wallet_address,rating_avg,rating_count")
-    .eq("id", user.id)
-    .single();
+  if (walletAddress !== undefined && profileJson.profile.wallet_address !== walletAddress) {
+    return updateWalletAddress(profileJson.profile.id, walletAddress ?? null);
+  }
 
-  if (error) throw error;
-  return data as UserProfileRow;
+  return profileJson.profile;
 }
 
 export async function updateRole(userId: string, role: UserRole) {
-  const { error } = await supabase.from("users").update({ role }).eq("id", userId);
-  if (error) throw error;
+  void userId;
+  const response = await fetch("/api/profile", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ role }),
+  });
+  const json = (await response.json()) as { profile?: UserProfileRow; error?: string };
+  if (!response.ok || !json.profile) {
+    throw new Error(json.error || "Failed to save role");
+  }
+  return json.profile;
 }
 
 export async function updateWalletAddress(userId: string, walletAddress: string | null) {
-  const { error } = await supabase
-    .from("users")
-    .update({ wallet_address: walletAddress })
-    .eq("id", userId);
-  if (error) throw error;
-
-  // Best effort compatibility for deployments using a `profiles` table.
-  await supabase
-    .from("profiles")
-    .update({ wallet_address: walletAddress })
-    .eq("id", userId);
+  void userId;
+  const response = await fetch("/api/profile", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ walletAddress }),
+  });
+  const json = (await response.json()) as { profile?: UserProfileRow; error?: string };
+  if (!response.ok || !json.profile) {
+    throw new Error(json.error || "Failed to save wallet");
+  }
+  return json.profile;
 }
 
 export async function createRideOffer(input: {

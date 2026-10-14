@@ -23,10 +23,10 @@ const ACTIVE_STATUSES: RideBookingRow["status"][] = ["waiting", "accepted"];
 
 function StatusBadge({ status }: { status: RideBookingRow["status"] }) {
   const colors = {
-    waiting: "bg-amber-500/20 text-amber-300",
-    accepted: "bg-emerald-500/20 text-emerald-300",
-    completed: "bg-blue-500/20 text-blue-300",
-    cancelled: "bg-rose-500/20 text-rose-300",
+    waiting: "bg-amber-100 text-amber-800",
+    accepted: "bg-emerald-100 text-emerald-800",
+    completed: "bg-blue-100 text-blue-800",
+    cancelled: "bg-rose-100 text-rose-800",
   };
 
   return (
@@ -121,15 +121,15 @@ export default function PassengerRideStatus({
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-slate-200/10 bg-white/5 p-6 text-center">
-        <p className="text-sm text-slate-400">Loading your rides...</p>
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center">
+        <p className="text-sm text-slate-600">Loading your rides...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
+      <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
         {error}
       </div>
     );
@@ -141,33 +141,33 @@ export default function PassengerRideStatus({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-slate-200">
+      <h3 className="text-sm font-semibold text-slate-800">
         {activeRide ? "Current Active Ride" : "Ride History"}
       </h3>
       {paymentMessage && (
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-200">
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
           {paymentMessage}
         </div>
       )}
       {activeRide ? (
-        <article className="rounded-2xl border border-slate-200/10 bg-white/5 p-4">
+        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
             <StatusBadge status={activeRide.status} />
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-500">
               {new Date(activeRide.created_at).toLocaleString()}
             </span>
           </div>
           <div className="space-y-2 text-sm">
-            <p className="text-slate-200">
-              <span className="text-slate-400">Pickup:</span>{" "}
+            <p className="text-slate-800">
+              <span className="text-slate-500">Pickup:</span>{" "}
               {activeRide.pickup_place_name || "Pickup location"}
             </p>
-            <p className="text-slate-200">
-              <span className="text-slate-400">Destination:</span>{" "}
+            <p className="text-slate-800">
+              <span className="text-slate-500">Destination:</span>{" "}
               {activeRide.destination_place_name || "Destination location"}
             </p>
           </div>
-          <p className="mt-2 text-xs text-slate-300">
+          <p className="mt-2 text-xs text-slate-600">
             {activeRide.escrow_state === "locked"
               ? "Funds locked on Algorand"
               : activeRide.escrow_state === "released"
@@ -179,7 +179,7 @@ export default function PassengerRideStatus({
                 type="button"
                 onClick={() => void onCompleteRide(activeRide)}
                 disabled={isBusy}
-                className="mt-3 w-full rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 w-full rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Complete Ride
               </button>
@@ -187,14 +187,14 @@ export default function PassengerRideStatus({
           {activeRide.status === "accepted" &&
             activeRide.escrow_state === "pending_lock" &&
             (!walletAddress || walletAddress !== activeRide.passenger_wallet) && (
-              <p className="mt-2 text-xs text-amber-300">
+              <p className="mt-2 text-xs text-amber-700">
                 Connect the passenger wallet used for booking to lock escrow.
               </p>
             )}
           {activeRide.status === "accepted" &&
             activeRide.passenger_completed &&
             !activeRide.driver_completed && (
-              <p className="mt-3 text-xs text-amber-300">
+              <p className="mt-3 text-xs text-amber-700">
                 Waiting for driver confirmation to finish ride and release payment.
               </p>
             )}
@@ -203,15 +203,15 @@ export default function PassengerRideStatus({
         historyRides.map((ride) => (
           <article
             key={ride.id}
-            className="rounded-2xl border border-slate-200/10 bg-white/5 p-4"
+            className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
           >
             <div className="mb-2 flex items-center justify-between">
               <StatusBadge status={ride.status} />
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-500">
                 {new Date(ride.created_at).toLocaleString()}
               </span>
             </div>
-            <p className="text-sm text-slate-200">
+            <p className="text-sm text-slate-800">
               {ride.pickup_place_name || "Pickup location"} to{" "}
               {ride.destination_place_name || "Destination location"}
             </p>

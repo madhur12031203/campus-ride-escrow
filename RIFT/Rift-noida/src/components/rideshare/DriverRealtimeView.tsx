@@ -111,7 +111,7 @@ async function fetchPlaceDetails(placeId: string): Promise<{
 
 function LocationIcon() {
   return (
-    <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="h-5 w-5 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
@@ -238,20 +238,33 @@ export default function DriverRealtimeView({
   const hasLocation = driverLat != null && driverLng != null;
   const isPlacesEnabled = Boolean(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
 
+  function handleManualLocation() {
+    const value = locationName.trim();
+    if (!value) {
+      setError("Enter your current location");
+      return;
+    }
+    setDriverLat(28.5355);
+    setDriverLng(77.391);
+    setError(null);
+    setSuggestions([]);
+    setIsActive(false);
+  }
+
   return (
     <div className="space-y-4">
       {!hasLocation ? (
-        <div className="rounded-2xl border border-slate-200/10 bg-white/5 p-4">
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           {!isPlacesEnabled && (
-            <p className="mb-3 text-xs text-amber-300">
-              Location search is unavailable because Google Maps API key is missing.
+            <p className="mb-3 text-xs text-amber-700">
+              Google Maps key is missing, so manual driver location is enabled.
             </p>
           )}
-          <p className="mb-3 text-sm font-medium text-slate-300">
+          <p className="mb-3 text-sm font-medium text-slate-700">
             Enter your location to see nearby rides
           </p>
           <div className="relative" ref={inputRef}>
-            <div className="flex items-center gap-3 rounded-xl border border-slate-200/10 bg-white/5 p-3">
+            <div className="flex min-h-[56px] items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 transition focus-within:border-sky-400">
               <LocationIcon />
               <div className="flex-1">
                 <input
@@ -260,20 +273,20 @@ export default function DriverRealtimeView({
                   onFocus={() => setIsActive(true)}
                   onChange={(e) => setLocationName(e.target.value)}
                   placeholder="Your current location"
-                  className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-400 outline-none"
-                  disabled={isLoadingPlaceDetails || !isPlacesEnabled}
+                  className="w-full bg-transparent text-sm text-slate-950 placeholder-slate-400 outline-none"
+                  disabled={isLoadingPlaceDetails}
                   autoComplete="off"
                 />
               </div>
             </div>
             {isActive && suggestions.length > 0 && (
-              <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-slate-600/80 bg-slate-900 shadow-2xl">
+              <div className="absolute left-0 right-0 z-30 mt-1.5 max-h-56 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl">
                 {suggestions.slice(0, 6).map((p) => (
                   <button
                     type="button"
                     key={p.placeId}
                     onClick={() => void handlePickSuggestion(p)}
-                    className="block w-full truncate border-b border-slate-800 px-3 py-2.5 text-left text-sm text-slate-100 transition last:border-b-0 hover:bg-slate-800"
+                    className="block w-full truncate border-b border-slate-100 px-3 py-2.5 text-left text-sm text-slate-700 transition last:border-b-0 hover:bg-slate-50"
                   >
                     {p.text}
                   </button>
@@ -284,21 +297,21 @@ export default function DriverRealtimeView({
           <div className="mt-3">
             <button
               type="button"
-              onClick={handleUseMyLocation}
-              disabled={isLoadingPlaceDetails || !isPlacesEnabled}
-              className="w-full rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+              onClick={isPlacesEnabled ? handleUseMyLocation : handleManualLocation}
+              disabled={isLoadingPlaceDetails}
+              className="w-full rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50"
             >
-              {isLoadingPlaceDetails ? "Loading..." : "Use my location"}
+              {isLoadingPlaceDetails ? "Loading..." : isPlacesEnabled ? "Use my location" : "Continue"}
             </button>
           </div>
           {error && (
-            <p className="mt-2 text-sm text-rose-400">{error}</p>
+            <p className="mt-2 text-sm text-rose-700">{error}</p>
           )}
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between rounded-2xl border border-slate-200/10 bg-white/5 px-4 py-2">
-            <span className="text-sm text-slate-400">
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+            <span className="text-sm text-slate-600">
               Your location: {locationName || "Current location selected"}
             </span>
             <button
@@ -308,7 +321,7 @@ export default function DriverRealtimeView({
                 setDriverLng(null);
                 setLocationName("");
               }}
-              className="text-xs font-medium text-slate-400 hover:text-slate-200"
+              className="text-xs font-medium text-slate-500 hover:text-slate-900"
             >
               Change
             </button>

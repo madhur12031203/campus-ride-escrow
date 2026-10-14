@@ -377,7 +377,7 @@ export async function markPassengerCompleted(
 async function maybeFinalizeRideCompletion(
   ride: RideBookingRow
 ): Promise<{ ride: RideBookingRow; shouldReleasePayment: boolean }> {
-  if (!ride.driver_completed && !ride.passenger_completed) {
+  if (!ride.driver_completed || !ride.passenger_completed) {
     return { ride, shouldReleasePayment: false };
   }
 

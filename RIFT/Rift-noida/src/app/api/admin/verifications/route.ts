@@ -6,6 +6,11 @@
 
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
+import {
+  getSupabasePublishableKey,
+  getSupabaseServiceRoleKey,
+  getSupabaseUrl,
+} from "@/lib/supabase/env";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -22,8 +27,8 @@ function isAdmin(email: string | undefined): boolean {
 export async function GET(request: Request) {
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    getSupabaseUrl(),
+    getSupabasePublishableKey(),
     {
       cookies: {
         getAll() {
@@ -47,8 +52,8 @@ export async function GET(request: Request) {
   const status = searchParams.get("status") || "pending";
 
   const serviceSupabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    getSupabaseUrl(),
+    getSupabaseServiceRoleKey(),
   );
 
   // Fetch verifications with user info
